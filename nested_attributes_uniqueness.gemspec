@@ -4,14 +4,14 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'nested_attributes_uniqueness/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "validates_uniqueness_in_memory"
+  spec.name          = "nested_attributes_uniqueness"
   spec.version       = NestedAttributesUniqueness::VERSION
   spec.authors       = ["Ankit"]
-  spec.email         = ["ankit.bansal@vinsol.com", "akshay.vishnoi@vinsol.com"]
+  spec.email         = ["akshay.vishnoi@vinsol.com", "ankit.bansal@vinsol.com", "udit@vinsol.com"]
 
   spec.summary       = %q{Checks for uniqueness vaidation in nested attributes for objects in memory .}
   spec.description   = %q{Checks for uniqueness vaidation in nested attributes for objects in memory .}
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/vinsol/nested_attributes_uniqueness"
   spec.license       = 'MIT'
 
   # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
@@ -29,9 +29,9 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 1.10"
   spec.add_development_dependency "rake", "~> 10.0"
-  spec.add_development_dependency "rspec"
-  spec.add_development_dependency "coveralls"
-  spec.add_development_dependency "activerecord"
-  spec.add_development_dependency "activesupport"
+  spec.add_development_dependency "rspec", "~> 3.3.0"
+  spec.add_development_dependency "coveralls", "~> 0.8.2"
+  spec.add_development_dependency "activerecord", ">=3.2.0"
+  spec.add_development_dependency "activesupport", ">=3.2.0"
   spec.add_development_dependency "sqlite3"
 end

@@ -15,7 +15,7 @@
 # end
 
 module NestedAttributesUniqueness
-  extend ActiveSupport::Concern
+  extend ::ActiveSupport::Concern
 
   private
     # Note - can be updated w.r.t. scoped attributes combination
@@ -36,7 +36,7 @@ module NestedAttributesUniqueness
           end
           if hash[key]
             record.errors.add(attribute, options[:message])
-            parent.errors.add(:base, "#{ collection_name } Not Valid")
+            parent.errors.add(:base, "#{ collection_name } not valid")
           else
             (hash[key] = record)
           end

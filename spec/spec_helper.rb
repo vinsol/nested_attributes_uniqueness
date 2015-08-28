@@ -18,7 +18,6 @@
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 require 'sqlite3'
 require 'active_record'
-require 'active_support'
 require_relative './support/database_connection.rb'
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
