@@ -48,7 +48,7 @@ describe NestedAttributesUniqueness do
         end
         it 'has errors' do
           @test.valid?
-          expect(@test.errors[:base]).to include("TestChildNestedAttributesUniquenesses Not Valid")
+          expect(@test.errors[:base]).to include("TestChildNestedAttributesUniquenesses not valid")
         end
         it 'has errors associated with its child attributes' do
           @test.valid?
@@ -106,7 +106,7 @@ describe NestedAttributesUniqueness do
         end
         it 'has errors' do
           @test.valid?
-          expect(@test.errors[:base]).to include("TestChildNestedAttributesUniquenesses Not Valid")
+          expect(@test.errors[:base]).to include("TestChildNestedAttributesUniquenesses not valid")
         end
         it 'has errors associated with child attributes' do
           @test.valid?
@@ -142,7 +142,7 @@ describe NestedAttributesUniqueness do
         end
         it 'has errors' do
           @test.valid?
-          expect(@test.errors[:base]).to include("TestChildNestedAttributesUniquenesses Not Valid")
+          expect(@test.errors[:base]).to include("TestChildNestedAttributesUniquenesses not valid")
         end
         it 'has errors associated with child attributes' do
           @test.valid?
@@ -172,7 +172,7 @@ describe NestedAttributesUniqueness do
         end
         it 'has errors' do
           @test.valid?
-          expect(@test.errors[:base]).to include("TestChildNestedAttributesUniquenesses Not Valid")
+          expect(@test.errors[:base]).to include("TestChildNestedAttributesUniquenesses not valid")
         end
         it 'has errors associated with child attributes' do
           @test.valid?

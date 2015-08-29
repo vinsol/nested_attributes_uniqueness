@@ -1,6 +1,6 @@
 require 'nested_attributes_uniqueness'
 class TestNestedAttributesUniqueness < ActiveRecord::Base
-  include NestedAttributesUniqueness
+  include NestedAttributesUniqueness::Validator
 
   has_many :test_uniqueness_childs, class_name: :TestChildNestedAttributesUniqueness
   has_many :test_scope_childs, class_name: :TestChildNestedAttributesUniqueness

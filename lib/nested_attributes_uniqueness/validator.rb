@@ -14,6 +14,34 @@
 #   belongs_to :user
 # end
 
+# This module also provides uniqueness validation for nested_attributes which are associated with a 
+# tree polymorphic association.
+# It assumes that the tree polymorphic table uses container and component as the name of the
+# polymorphic attributes
+#
+# +USAGE+
+#
+# class Form < ActiveRecord::Base
+#   has_many :form_contents, as: :container
+#   
+#   # Ensures replies have unique content across post
+#   validates_uniqueness_in_memory_for_polymorphism :form_contents, :sub_form_group, :sub_forms, :name
+# end
+#
+# class FormContent < ActiveRecord::Base
+#   belongs_to :container, polymorphic: true
+#   belongs_to :component, polymorphic: true
+# end
+#
+# class SubFormGroup < ActiveRecord::Base
+#   has_many :form_contents, as: :component
+#   has_many :sub_forms
+# end
+#
+# class SubForm < ActiveRecord::Base
+#   belongs_to :sub_form_group
+#   has_many form_components, as: :container
+# end
 module NestedAttributesUniqueness
   module Validator
     extend ::ActiveSupport::Concern
@@ -22,19 +50,38 @@ module NestedAttributesUniqueness
       # Note - can be updated w.r.t. scoped attributes combination
       def validate_unique_nested_attributes(parent, collection, attribute, options = {})
         return true if collection.empty?
-        options[:message] ||= "has already been taken"
-        collection_name = collection.first.class.name.pluralize if collection.any?
+
+        build_default_options(options)
+        validate_unique_attribute_in_collection(parent, attribute, collection, options)
+      end
+
+      # Note - can be updated w.r.t. scoped attributes combination
+      def validate_unique_nested_attributes_for_tree_polymorphism(parent, polymorphic_association_name, type, collection_name, attribute, options = {})
+        types_with_collection = find_types_and_all_collections(parent, polymorphic_association_name, type, collection_name)
+        return true if types_with_collection.blank?
+
+        build_default_options(options)
+        
+        # Maintains unique values for complete collection
         hash = {}
+
+        types_with_collection.each do |component, collection|
+          validate_unique_attribute_in_collection(parent, attribute, collection, options, hash)
+        end
+      end
+
+      def build_default_options(options = {})
+        options[:message] ||= "has already been taken"
+      end
+
+      def validate_unique_attribute_in_collection(parent, attribute, collection, options, hash = {})
+        collection_name = collection.first.class.name.pluralize
         collection.each do |record|
-          unless record.errors.get(attribute)
+          if (!record.marked_for_destruction? && record.errors.get(attribute).blank?)
             attribute_value = record.send(attribute)
             attribute_value = attribute_value.downcase if options[:case_sensitive] == false
-            if record.marked_for_destruction?
-              key = record.object_id
-            else
-              key = [attribute_value]
-              key += Array.wrap(options[:scope]).map { |attribute| record.public_send(attribute) }
-            end
+            key = [attribute_value]
+            key += Array.wrap(options[:scope]).map { |attribute| record.public_send(attribute) }
             if hash[key]
               record.errors.add(attribute, options[:message])
               parent.errors.add(:base, "#{ collection_name } not valid")
@@ -43,6 +90,34 @@ module NestedAttributesUniqueness
             end
           end
         end
+      end
+
+      # Returns a hash with component as key and its collection as value.
+      # component can be at any level but in hash, it is at root level
+      def find_types_and_all_collections(parent, polymorphic_association_name, type, collection_name)
+        components = find_desired_components(parent, polymorphic_association_name, type.to_s.camelize.constantize)
+
+        components_with_collection = {}
+
+        components.each do |component|
+          components_with_collection[component] = component.send(collection_name)
+
+          components_with_collection[component].each do |collection_element|
+            components_with_collection.merge!(find_types_and_all_collections(collection_element, polymorphic_association_name, type, collection_name))
+          end
+        end
+        components_with_collection
+      end
+
+      def find_desired_components(parent, polymorphic_association_name, type)
+        components = parent.send(:try, polymorphic_association_name).to_a.map(&:component)
+        components.map do |component|
+          if component.is_a?(type)
+            component
+          else
+            find_desired_components(component, polymorphic_association_name, type)
+          end
+        end.flatten.compact
       end
 
     module ClassMethods
@@ -78,6 +153,25 @@ module NestedAttributesUniqueness
       def validates_uniqueness_in_memory(collection_name, attribute, options = {})
         after_validation do
           validate_unique_nested_attributes self, public_send(collection_name), attribute, options
+        end
+      end
+
+      # This method adds an +after_validation+ callback.
+      #
+      # ==== Parameters
+      #
+      # * +polymorphic_association_name+ - Name of the tree polumorphic association
+      #   with container and component as the name of polymorphic attributes
+      # * +type+ - The component type in which to look for collection
+      # * +collection_name+ - The association name that should be used for fetching
+      #   collection.
+      # * +attribute+ - The attribute name on the association that should be validated.
+      # * +options+ - It accepts all options that `UniqunessValidator` accepts.
+      #   Defaults to no options.
+      #   Supports scope and case_sensitive options
+      def validates_uniqueness_in_memory_for_tree_polymorphism(polymorphic_association_name, type, collection_name, attribute, options = {})
+        after_validation do
+          validate_unique_nested_attributes_for_tree_polymorphism self, polymorphic_association_name, type, collection_name, attribute, options
         end
       end
     end
