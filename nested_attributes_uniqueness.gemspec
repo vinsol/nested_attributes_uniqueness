@@ -6,7 +6,7 @@ require 'nested_attributes_uniqueness/version'
 Gem::Specification.new do |spec|
   spec.name          = "nested_attributes_uniqueness"
   spec.version       = NestedAttributesUniqueness::VERSION
-  spec.authors       = ["Ankit"]
+  spec.authors       = ["Akshay", "Ankit", "Udit"]
   spec.email         = ["akshay.vishnoi@vinsol.com", "ankit.bansal@vinsol.com", "udit@vinsol.com"]
 
   spec.summary       = %q{Checks for uniqueness vaidation in nested attributes for objects in memory .}

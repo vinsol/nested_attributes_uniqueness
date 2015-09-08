@@ -14,7 +14,7 @@
 #   belongs_to :user
 # end
 
-# This module also provides uniqueness validation for nested_attributes which are associated with a 
+# This module also provides uniqueness validation for nested_attributes which are associated with a
 # tree polymorphic association.
 # It assumes that the tree polymorphic table uses container and component as the name of the
 # polymorphic attributes
@@ -23,7 +23,7 @@
 #
 # class Form < ActiveRecord::Base
 #   has_many :form_contents, as: :container
-#   
+#
 #   # Ensures replies have unique content across post
 #   validates_uniqueness_in_memory_for_polymorphism :form_contents, :sub_form_group, :sub_forms, :name
 # end
@@ -61,7 +61,7 @@ module NestedAttributesUniqueness
         return true if types_with_collection.blank?
 
         build_default_options(options)
-        
+
         # Maintains unique values for complete collection
         hash = {}
 
