@@ -1,7 +1,5 @@
 require 'nested_attributes_uniqueness'
 class TestTopContainer < ActiveRecord::Base
-  include NestedAttributesUniqueness::Validator
-
   has_many :test_tree_nodes, as: :container
 
   # when scope is provided

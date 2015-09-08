@@ -1,36 +1,61 @@
-# NestedAttributesUniqueness
+NestedAttributesUniqueness
+-------
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/nested_attributes_uniqueness`. To experiment with that code, run `bin/console` for an interactive prompt.
+This gem provides two class methods `validates_uniqueness_in_memory` and `validates_uniqueness_in_memory_for_tree_polymorphism` which allows us to validate the uniqueness of nested attributes in memory.
 
-TODO: Delete this and the text above, and describe your gem
+Installation
+-------
 
-## Installation
+Add this line to your application`s Gemfile:
 
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'nested_attributes_uniqueness'
+```shell
+gem 'nested_attributes_uniqueness', '~> 0.1.0'
 ```
 
 And then execute:
 
-    $ bundle
+```shell
+$ bundle
+```
 
 Or install it yourself as:
 
-    $ gem install nested_attributes_uniqueness
+```shell
+$ gem install nested_attributes_uniqueness
+```
 
-## Usage
+Usage
+-------
 
-TODO: Write usage instructions here
+For _ActiveRecord:_
 
-## Development
+```ruby
+  class User < ActiveRecord::Base
+    include NestedAttributesUniqueness
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake false` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+    has_many :posts
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+    validates_uniqueness_in_memory :posts, :name, { scope: user_id, case_sensitive: false }
+  end
+```
 
-## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/nested_attributes_uniqueness.
+Testing
+-------
 
+```shell
+$ bundle
+$ bundle exec rspec spec
+```
+
+Contributing
+-------
+
+```
+1. Fork it ( https://github.com/vinsol/nested_attributes_uniqueness/fork ).
+2. Create your feature branch (`git checkout -b my-new-feature`).
+3. Add test cases and verify all tests are green.
+4. Commit your changes (`git commit -am 'Add some feature'`).
+5. Push to the branch (`git push origin my-new-feature`).
+6. Create new Pull Request.
+```
