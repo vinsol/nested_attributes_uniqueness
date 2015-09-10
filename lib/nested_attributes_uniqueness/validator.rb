@@ -82,7 +82,7 @@ module NestedAttributesUniqueness
             attribute_value = attribute_value.downcase if options[:case_sensitive] == false
             key = [attribute_value]
             key += Array.wrap(options[:scope]).map { |attribute| record.public_send(attribute) }
-            if hash[key] || existing_record_with_attribute?(record, attribute, options)
+            if hash[key] || existing_record_with_attribute?(record, attribute, collection, options)
               record.errors.add(attribute, options[:message])
               add_error_to_base(parent, collection_name)
             else
@@ -92,15 +92,20 @@ module NestedAttributesUniqueness
         end
       end
 
-      def existing_record_with_attribute?(record, attribute, options)
-        record_id = record.id
+      def existing_record_with_attribute?(record, attribute, collection, options)
+        record_id              = record.id
+        collection_ids         = collection.map(&:id).compact
         record_attribute_value = record.public_send(attribute)
+
         if record_attribute_value.is_a? Numeric
           query = "#{ attribute.to_s } = #{ record_attribute_value }"
         else
           query = "#{ attribute.to_s } = '#{ record_attribute_value }'"
         end
-        query += " AND id != #{ record_id }" if record_id.present?
+        if record_id.present? && collection_ids.present?
+          ids_query_string = "(#{ collection_ids.join(',') })"
+          query += " AND id NOT IN #{ ids_query_string }"
+        end
         existing_records = record.class.where(query)
         records_exists   = existing_records.present?
         if options[:scope]
