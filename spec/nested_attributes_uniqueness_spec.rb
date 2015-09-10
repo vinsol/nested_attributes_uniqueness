@@ -149,6 +149,35 @@ describe NestedAttributesUniqueness do
           expect(@test.test_scope_childs.last.errors[:name]).to include("is already present in this test_nested_attributes_uniqueness")
         end
       end
+
+      context 'when record already exists with same parameters' do
+        before do
+          old_test = TestNestedAttributesUniqueness.new(name: 'old')
+          old_test.test_scope_childs.build(name: 'test', address: 'address')
+          old_test.save
+        end
+
+        after do
+          TestNestedAttributesUniqueness.destroy_all
+          TestChildNestedAttributesUniqueness.destroy_all
+        end
+
+        it 'does not validate' do
+          expect(@test).to_not be_valid
+        end
+        it 'has error count 1' do
+          @test.valid?
+          expect(@test.errors.count).to eq 1
+        end
+        it 'has errors' do
+          @test.valid?
+          expect(@test.errors[:base]).to include("TestChildNestedAttributesUniquenesses not valid")
+        end
+        it 'has errors associated with child attributes' do
+          @test.valid?
+          expect(@test.test_scope_childs.last.errors[:name]).to include("is already present in this test_nested_attributes_uniqueness")
+        end
+      end
     end
 
     context 'when case senstivity is true' do

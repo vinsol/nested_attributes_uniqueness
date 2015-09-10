@@ -82,14 +82,34 @@ module NestedAttributesUniqueness
             attribute_value = attribute_value.downcase if options[:case_sensitive] == false
             key = [attribute_value]
             key += Array.wrap(options[:scope]).map { |attribute| record.public_send(attribute) }
-            if hash[key]
+            if hash[key] || existing_record_with_attribute?(record, attribute, options)
               record.errors.add(attribute, options[:message])
-              parent.errors.add(:base, "#{ collection_name } not valid")
+              add_error_to_base(parent, collection_name)
             else
               (hash[key] = record)
             end
           end
         end
+      end
+
+      def existing_record_with_attribute?(record, attribute, options)
+        existing_records = record.class.where(:"#{ attribute.to_s }" => record.send(attribute))
+        records_exists   = existing_records.present?
+        if options[:scope]
+          scope_value = record.public_send(options[:scope])
+          existing_records = existing_records.where(:"#{ options[:scope] }" => scope_value)
+          records_exists = existing_records.present?
+        end
+        records_exists
+      end
+
+      def add_error_to_base(parent, collection_name)
+        message = "#{ collection_name } not valid"
+        existing_errors = parent.errors
+        existing_errors_on_base = (existing_errors.present? ? existing_errors.messages[:base] : nil)
+        return if existing_errors_on_base.present? && existing_errors_on_base.include?(message)
+
+        parent.errors.add(:base, message)
       end
 
       # Returns a hash with component as key and its collection as value.

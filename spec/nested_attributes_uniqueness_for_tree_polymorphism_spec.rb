@@ -179,6 +179,46 @@ describe NestedAttributesUniqueness do
           expect(@test_component2.test_uniqueness_childs.last.errors[:name]).to include("is already present in top_container")
         end
       end
+
+      context 'when record already exists with same parameters' do
+        before do
+          old_test = TestTopContainer.new(name: 'old')
+          old_test_nodes = []
+          old_test_nodes[0] = old_test.test_tree_nodes.build
+          old_test_component1 = TestComponent.new(name: 'main_component1')
+          old_test_nodes[0].component = old_test_component1
+          old_test_component1.test_uniqueness_childs.build(name: 'sub_container1', address: 'address1')
+          old_test_nodes[1] = old_test.test_tree_nodes.build
+          old_test_component2 = TestComponent.new(name: 'main_component2')
+          old_test_nodes[1].component = old_test_component2
+          old_test_component2.test_uniqueness_childs.build(name: 'sub_container2', address: 'address2')
+
+          old_test.save
+        end
+
+        after do
+          TestTopContainer.destroy_all
+          TestTreeNode.destroy_all
+          TestSubContainer.destroy_all
+          TestComponent.destroy_all
+        end
+
+        it 'does not validate' do
+          expect(@test).to_not be_valid
+        end
+        it 'has error count 1' do
+          @test.valid?
+          expect(@test.errors.count).to eq 1
+        end
+        it 'has errors' do
+          @test.valid?
+          expect(@test.errors[:base]).to include("TestSubContainers not valid")
+        end
+        it 'has errors associated with child attributes' do
+          @test.valid?
+          expect(@test_component2.test_uniqueness_childs.last.errors[:name]).to include("is already present in top_container")
+        end
+      end
     end
 
     # Cases when case sensitivity is true
