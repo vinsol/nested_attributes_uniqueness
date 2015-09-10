@@ -93,7 +93,15 @@ module NestedAttributesUniqueness
       end
 
       def existing_record_with_attribute?(record, attribute, options)
-        existing_records = record.class.where(:"#{ attribute.to_s }" => record.send(attribute))
+        record_id = record.id
+        record_attribute_value = record.public_send(attribute)
+        if record_attribute_value.is_a? Numeric
+          query = "#{ attribute.to_s } = #{ record_attribute_value }"
+        else
+          query = "#{ attribute.to_s } = '#{ record_attribute_value }'"
+        end
+        query += " AND id != #{ record_id }" if record_id.present?
+        existing_records = record.class.where(query)
         records_exists   = existing_records.present?
         if options[:scope]
           scope_value = record.public_send(options[:scope])
