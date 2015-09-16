@@ -1,7 +1,7 @@
 NestedAttributesUniqueness
 -------
 
-This gem provides two class methods `validates_uniqueness_in_memory` and `validates_uniqueness_in_memory_for_tree_polymorphism` which allows us to validate the uniqueness of nested attributes in memory.
+This gem provides two class methods `validates_uniqueness_in_memory` and `validates_uniqueness_in_memory_for_tree_polymorphism` which ensures that the nested attribute uniqueness validation is not only checked against DB records but also against the non-persisted objects in memory.
 
 Installation
 -------
