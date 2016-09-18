@@ -13,7 +13,7 @@ describe NestedAttributesUniqueness do
       create_table :test_child_nested_attributes_uniquenesses, force: true do |t|
         t.string :name
         t.string :address
-        t.references :test_nested_attributes_uniqueness
+        t.references :test_nested_attributes_uniqueness, index: {name: :ff_bar}
       end
     end
   end
@@ -48,7 +48,7 @@ describe NestedAttributesUniqueness do
         end
         it 'has errors' do
           @test.valid?
-          expect(@test.errors[:base]).to include("TestChildNestedAttributesUniquenesses not valid")
+          expect(@test.errors[:base]).to include("is already present in this test_nested_attributes_uniqueness")
         end
         it 'has errors associated with its child attributes' do
           @test.valid?
@@ -106,7 +106,7 @@ describe NestedAttributesUniqueness do
         end
         it 'has errors' do
           @test.valid?
-          expect(@test.errors[:base]).to include("TestChildNestedAttributesUniquenesses not valid")
+          expect(@test.errors[:base]).to include("is already present in this test_nested_attributes_uniqueness")
         end
         it 'has errors associated with child attributes' do
           @test.valid?
@@ -142,7 +142,7 @@ describe NestedAttributesUniqueness do
         end
         it 'has errors' do
           @test.valid?
-          expect(@test.errors[:base]).to include("TestChildNestedAttributesUniquenesses not valid")
+          expect(@test.errors[:base]).to include("is already present in this test_nested_attributes_uniqueness")
         end
         it 'has errors associated with child attributes' do
           @test.valid?
@@ -171,7 +171,7 @@ describe NestedAttributesUniqueness do
         end
         it 'has errors' do
           @test.valid?
-          expect(@test.errors[:base]).to include("TestChildNestedAttributesUniquenesses not valid")
+          expect(@test.errors[:base]).to include("is already present in this test_nested_attributes_uniqueness")
         end
         it 'has errors associated with child attributes' do
           @test.valid?
@@ -201,7 +201,7 @@ describe NestedAttributesUniqueness do
         end
         it 'has errors' do
           @test.valid?
-          expect(@test.errors[:base]).to include("TestChildNestedAttributesUniquenesses not valid")
+          expect(@test.errors[:base]).to include("has already been taken")
         end
         it 'has errors associated with child attributes' do
           @test.valid?
@@ -212,6 +212,50 @@ describe NestedAttributesUniqueness do
       context 'when parameters are different' do
         before do
           @test_childs[1] = @test.test_case_sensitivity_childs.build(name: 'Test', address: 'address')
+        end
+
+        it 'validates' do
+          expect(@test).to be_valid
+        end
+        it 'does not have errors' do
+          @test.valid?
+          expect(@test.errors.count).to eq 0
+        end
+      end
+    end
+
+    context 'when custom message is provided' do
+      before do
+        @test = TestNestedAttributesUniqueness.new(name: 'main')
+        @test_childs = []
+        @test_childs[0] = @test.test_custom_message_childs.build(name: 'test', address: 'address')
+      end
+
+      context 'when parameters are same' do
+        before do
+          @test_childs[1] = @test.test_custom_message_childs.build(name: 'test', address: 'address')
+        end
+
+        it 'does not validate' do
+          expect(@test).to_not be_valid
+        end
+        it 'has error count 1' do
+          @test.valid?
+          expect(@test.errors.count).to eq 1
+        end
+        it 'has errors' do
+          @test.valid?
+          expect(@test.errors[:base]).to include("foo bar custom message")
+        end
+        it 'has errors associated with child attributes' do
+          @test.valid?
+          expect(@test.test_custom_message_childs.last.errors[:name]).to include('foo bar custom message')
+        end
+      end
+
+      context 'when parameters are different' do
+        before do
+          @test_childs[1] = @test.test_custom_message_childs.build(name: 'Test', address: 'address')
         end
 
         it 'validates' do

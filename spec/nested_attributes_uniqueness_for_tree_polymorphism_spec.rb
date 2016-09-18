@@ -70,7 +70,7 @@ describe NestedAttributesUniqueness do
         end
         it 'has errors' do
           @test.valid?
-          expect(@test.errors[:base]).to include("TestSubContainers not valid")
+          expect(@test.errors[:base]).to include("is already present in top_container")
         end
         it 'has errors associated with its child attributes' do
           @test.valid?
@@ -136,7 +136,7 @@ describe NestedAttributesUniqueness do
         end
         it 'has errors' do
           @test.valid?
-          expect(@test.errors[:base]).to include("TestSubContainers not valid")
+          expect(@test.errors[:base]).to include("is already present in top_container")
         end
         it 'has errors associated with child attributes' do
           @test.valid?
@@ -172,7 +172,7 @@ describe NestedAttributesUniqueness do
         end
         it 'has errors' do
           @test.valid?
-          expect(@test.errors[:base]).to include("TestSubContainers not valid")
+          expect(@test.errors[:base]).to include("is already present in top_container")
         end
         it 'has errors associated with child attributes' do
           @test.valid?
@@ -212,7 +212,7 @@ describe NestedAttributesUniqueness do
         end
         it 'has errors' do
           @test.valid?
-          expect(@test.errors[:base]).to include("TestSubContainers not valid")
+          expect(@test.errors[:base]).to include("is already present in top_container")
         end
         it 'has errors associated with child attributes' do
           @test.valid?
@@ -250,7 +250,7 @@ describe NestedAttributesUniqueness do
         end
         it 'has errors' do
           @test.valid?
-          expect(@test.errors[:base]).to include("TestSubContainers not valid")
+          expect(@test.errors[:base]).to include("has already been taken")
         end
         it 'has errors associated with child attributes' do
           @test.valid?
