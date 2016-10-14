@@ -9,7 +9,8 @@ class TestNestedAttributesUniqueness < ActiveRecord::Base
     validate_unique_nested_attributes(self, test_uniqueness_childs, :name,
       { scope:          :address,
         case_sensitive: false,
-        message:        'is already present in this test_nested_attributes_uniqueness'
+        message:        'is already present in this test_nested_attributes_uniqueness',
+        parent_message: 'Multiple TestChildNestedAttributesUniquenesses have same name in same address scope.'
       }
     )
 

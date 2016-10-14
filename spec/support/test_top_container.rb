@@ -7,7 +7,8 @@ class TestTopContainer < ActiveRecord::Base
     {
       scope:          :address,
       case_sensitive: false,
-      message:        'is already present in top_container'
+      message:        'is already present in top_container',
+      parent_message: 'Multiple TestSubContainers have same name in same address scope.'
     }
   )
 

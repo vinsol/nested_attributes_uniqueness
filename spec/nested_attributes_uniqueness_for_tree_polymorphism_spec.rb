@@ -70,7 +70,7 @@ describe NestedAttributesUniqueness do
         end
         it 'has errors' do
           @test.valid?
-          expect(@test.errors[:base]).to include("TestSubContainers not valid")
+          expect(@test.errors[:base]).to include("Multiple TestSubContainers have same name in same address scope.")
         end
         it 'has errors associated with its child attributes' do
           @test.valid?
