@@ -7,16 +7,17 @@ class TestNestedAttributesUniqueness < ActiveRecord::Base
   after_validation do
     # when scope is provided
     validate_unique_nested_attributes(self, test_uniqueness_childs, :name,
-      { scope:          :address,
-        case_sensitive: false,
-        message:        'is already present in this test_nested_attributes_uniqueness'
+      { scope:                :address,
+        case_sensitive:       false,
+        error_message:        'is already present in this test_nested_attributes_uniqueness',
+        parent_error_message: 'Multiple TestChildNestedAttributesUniquenesses have same name in same address scope.'
       }
     )
 
     # when scope is not provided
     validate_unique_nested_attributes(self, test_scope_childs, :name,
-      { case_sensitive: false,
-        message:        'is already present in this test_nested_attributes_uniqueness'
+      { case_sensitive:       false,
+        error_message:        'is already present in this test_nested_attributes_uniqueness'
       }
     )
 
