@@ -35,7 +35,7 @@ For _ActiveRecord:_
 
     has_many :posts
 
-    validates_uniqueness_in_memory :posts, :name, { scope: user_id, case_sensitive: false }
+    validates_uniqueness_in_memory :posts, :name, { scope: user_id, case_sensitive: false, error_message: 'message', parent_error_message: 'message' }
   end
 ```
 

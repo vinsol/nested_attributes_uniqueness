@@ -71,7 +71,7 @@ module NestedAttributesUniqueness
       end
 
       def build_default_options(options = {})
-        options[:message] ||= "has already been taken"
+        options[:error_message] ||= "has already been taken"
       end
 
       def validate_unique_attribute_in_collection(parent, attribute, collection, options, hash = {})
@@ -83,7 +83,7 @@ module NestedAttributesUniqueness
             key = [attribute_value]
             key += Array.wrap(options[:scope]).map { |attribute| record.public_send(attribute) }
             if hash[key] || existing_record_with_attribute?(record, attribute, collection, options)
-              record.errors.add(attribute, options[:message])
+              record.errors.add(attribute, options[:error_message])
               add_error_to_base(parent, collection_name, options)
             else
               (hash[key] = record)
@@ -117,7 +117,7 @@ module NestedAttributesUniqueness
       end
 
       def add_error_to_base(parent, collection_name, options)
-        message = options[:parent_message] || "#{ collection_name } not valid"
+        message = options[:parent_error_message] || "#{ collection_name } not valid"
         existing_errors = parent.errors
         existing_errors_on_base = (existing_errors.present? ? existing_errors.messages[:base] : nil)
         return if existing_errors_on_base.present? && existing_errors_on_base.include?(message)

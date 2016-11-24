@@ -5,18 +5,18 @@ class TestTopContainer < ActiveRecord::Base
   # when scope is provided
   validates_uniqueness_in_memory_for_tree_polymorphism(:test_tree_nodes, :test_component, :test_scope_childs, :name,
     {
-      scope:          :address,
-      case_sensitive: false,
-      message:        'is already present in top_container',
-      parent_message: 'Multiple TestSubContainers have same name in same address scope.'
+      scope:                :address,
+      case_sensitive:       false,
+      error_message:        'is already present in top_container',
+      parent_error_message: 'Multiple TestSubContainers have same name in same address scope.'
     }
   )
 
   # when scope is not provided
   validates_uniqueness_in_memory_for_tree_polymorphism(:test_tree_nodes, :test_component, :test_uniqueness_childs, :name,
     {
-      case_sensitive: false,
-      message:        'is already present in top_container'
+      case_sensitive:       false,
+      error_message:        'is already present in top_container'
     }
   )
 
