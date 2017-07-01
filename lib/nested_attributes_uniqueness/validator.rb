@@ -77,7 +77,7 @@ module NestedAttributesUniqueness
       def validate_unique_attribute_in_collection(parent, attribute, collection, options, hash = {})
         collection_name = collection.first.class.name.pluralize
         collection.each do |record|
-          if (!record.marked_for_destruction? && record.errors.get(attribute).blank?)
+          if (!record.marked_for_destruction? && record.errors[attribute].blank?)
             attribute_value = record.send(attribute)
             attribute_value = attribute_value.downcase if options[:case_sensitive] == false
             key = [attribute_value]
