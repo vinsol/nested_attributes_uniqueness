@@ -77,14 +77,14 @@ module NestedAttributesUniqueness
       def validate_unique_attribute_in_collection(parent, attribute, collection, options, hash = {})
         collection_name = collection.first.class.name.pluralize
         collection.each do |record|
-          if (!record.marked_for_destruction? && record.errors.get(attribute).blank?)
+          if (!record.marked_for_destruction? && record.errors[attribute].blank?)
             attribute_value = record.send(attribute)
             attribute_value = attribute_value.downcase if options[:case_sensitive] == false
             key = [attribute_value]
             key += Array.wrap(options[:scope]).map { |attribute| record.public_send(attribute) }
             if hash[key] || existing_record_with_attribute?(record, attribute, collection, options)
               record.errors.add(attribute, options[:message])
-              add_error_to_base(parent, collection_name)
+              add_error_to_base(parent, collection_name, options[:message])
             else
               (hash[key] = record)
             end
@@ -116,8 +116,8 @@ module NestedAttributesUniqueness
         records_exists
       end
 
-      def add_error_to_base(parent, collection_name)
-        message = "#{ collection_name } not valid"
+      def add_error_to_base(parent, collection_name, message)
+        message ||= "#{ collection_name } not valid"
         existing_errors = parent.errors
         existing_errors_on_base = (existing_errors.present? ? existing_errors.messages[:base] : nil)
         return if existing_errors_on_base.present? && existing_errors_on_base.include?(message)
