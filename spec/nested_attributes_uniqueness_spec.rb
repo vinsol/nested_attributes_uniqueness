@@ -13,7 +13,7 @@ describe NestedAttributesUniqueness do
       create_table :test_child_nested_attributes_uniquenesses, force: true do |t|
         t.string :name
         t.string :address
-        t.references :test_nested_attributes_uniqueness, index: {name: :ff_bar}
+        t.references :test_nested_attributes_uniqueness, index: { name: 'test_nested_attributes_child_parent' }
       end
     end
   end
@@ -176,6 +176,19 @@ describe NestedAttributesUniqueness do
         it 'has errors associated with child attributes' do
           @test.valid?
           expect(@test.test_scope_childs.last.errors[:name]).to include("is already present in this test_nested_attributes_uniqueness")
+        end
+        context 'it properly escapes the input' do
+          before do
+            @test = TestNestedAttributesUniqueness.new(name: 'main')
+            @test_childs = []
+            @test_childs[0] = @test.test_scope_childs.build(name: "test') AND (name IS NULL); -- ')", address: 'address')
+          end
+
+          it { expect(@test).to be_valid }
+          it { expect(@test.test_scope_childs.last).to be_valid }
+          it "escapes the input" do
+            expect(@test_childs[0].name).to eq "test') AND (name IS NULL); -- ')"
+          end
         end
       end
     end

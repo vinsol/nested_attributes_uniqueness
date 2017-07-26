@@ -96,24 +96,18 @@ module NestedAttributesUniqueness
         record_id              = record.id
         collection_ids         = collection.map(&:id).compact
         record_attribute_value = record.public_send(attribute)
+        existing_records       = record.class.where("#{ attribute.to_s } = ?", record_attribute_value)
 
-        if record_attribute_value.is_a? Numeric
-          query = "#{ attribute.to_s } = #{ record_attribute_value }"
-        else
-          query = "#{ attribute.to_s } = '#{ record_attribute_value }'"
-        end
         if record_id.present? && collection_ids.present?
-          ids_query_string = "(#{ collection_ids.join(',') })"
-          query += " AND id NOT IN #{ ids_query_string }"
+          existing_records = existing_records.where.not("id IN ?", collection_ids)
         end
-        existing_records = record.class.where(query)
-        records_exists   = existing_records.present?
+
         if options[:scope]
           scope_value = record.public_send(options[:scope])
           existing_records = existing_records.where(:"#{ options[:scope] }" => scope_value)
-          records_exists = existing_records.present?
         end
-        records_exists
+
+        existing_records.present?
       end
 
       def add_error_to_base(parent, collection_name, message)
