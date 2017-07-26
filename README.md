@@ -6,19 +6,19 @@ This gem provides two class methods `validates_uniqueness_in_memory` and `valida
 Installation
 -------
 
-Add this line to your application`s Gemfile:
+Add this line to your application's Gemfile:
 
 ```shell
-gem 'nested_attributes_uniqueness', '~> 0.1.0'
+gem 'nested_attributes_uniqueness', '~> 1.0.1'
 ```
 
-And then execute:
+And then install dependencies using bundler:
 
 ```shell
 $ bundle
 ```
 
-Or install it yourself as:
+Or install it as system gem:
 
 ```shell
 $ gem install nested_attributes_uniqueness
